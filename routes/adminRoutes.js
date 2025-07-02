@@ -1,6 +1,6 @@
 const express = require('express');
 const {authorizeRole,authanticateToken} = require("../middlewares/authMiddleware")
-const { loginAdmin, getAllUsers, getAllProviders, getAllServices, getAllAppointment, deleteUser, deleteService } = require('../controllers/adminController');
+const { loginAdmin, getAllUsers, getAllProviders, getAllServices, getAllAppointment, deleteUser, deleteService, toggleBanUser, getPlatformStats } = require('../controllers/adminController');
 const router = express.Router();
 
 // Admin Routes
@@ -16,7 +16,11 @@ router.get('/all-appointmets',authanticateToken,authorizeRole('admin'),getAllApp
 
 router.delete('/delete-user/:id',authanticateToken,authorizeRole('admin'),deleteUser);
 
-router.delete('/delete-service/:id',authanticateToken,authorizeRole('admin'),deleteService)
+router.delete('/delete-service/:id',authanticateToken,authorizeRole('admin'),deleteService);
+
+router.patch('/user/:id',authanticateToken,authorizeRole('admin'),toggleBanUser);
+
+router.get('/',authanticateToken,authorizeRole('admin'),getPlatformStats)
 
 
 module.exports = router

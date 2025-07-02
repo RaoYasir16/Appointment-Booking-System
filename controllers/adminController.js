@@ -1,4 +1,4 @@
-const { user,service, appointment } = require("../models");
+const { user, service, appointment } = require("../models");
 const bcrypt = require("bcrypt");
 const generateToken = require("../utils/jwt");
 
@@ -66,115 +66,181 @@ const getAllUsers = async (req, res) => {
 };
 
 //...........Get all Providers............//
-const getAllProviders = async(req,res)=>{
-    try {
-        const provider = await user.findAll({where:{role:'provider'},exclude:['password']});
-        if(provider.length === 0){
-            return res.status(404).json({
-                message:"Providers Not found"
-            });
-        }
-
-        return res.status(200).json({
-            message:'Providers fatched Successfylly',
-            provider
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message:error.message
-        })
+const getAllProviders = async (req, res) => {
+  try {
+    const provider = await user.findAll({
+      where: { role: "provider" },
+      exclude: ["password"],
+    });
+    if (provider.length === 0) {
+      return res.status(404).json({
+        message: "Providers Not found",
+      });
     }
-}
+
+    return res.status(200).json({
+      message: "Providers fatched Successfylly",
+      provider,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 //..........Get all Services............//
-const getAllServices = async(req,res)=>{
-    try {
-        const services = await service.findAll();
-        if(services.length === 0){
-            return res.status(404).json({
-                message:"Services Not Found"
-            })
-        }
-
-        return res.status(200).json({
-            message:"Services Fatched Successfylly",
-            services
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message:error.message
-        })
+const getAllServices = async (req, res) => {
+  try {
+    const services = await service.findAll();
+    if (services.length === 0) {
+      return res.status(404).json({
+        message: "Services Not Found",
+      });
     }
-}
+
+    return res.status(200).json({
+      message: "Services Fatched Successfylly",
+      services,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 //.............Get all Appointments.......//
-const getAllAppointment = async(req,res)=>{
-    try {
-        const appointments = await appointment.findAll();
-        if(appointments.length === 0){
-            return res.status(404).json({
-                message:"Appointment not found"
-            })
-        }
-
-        return res.status(200).json({
-            message:"Appointment Fatched Successfully",
-            appointments
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message:error.message
-        })
+const getAllAppointment = async (req, res) => {
+  try {
+    const appointments = await appointment.findAll();
+    if (appointments.length === 0) {
+      return res.status(404).json({
+        message: "Appointment not found",
+      });
     }
-}
 
+    return res.status(200).json({
+      message: "Appointment Fatched Successfully",
+      appointments,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 //...........Delete User .......//
-const deleteUser = async(req,res)=>{
-    try {
-        const {id} = req.params
-        const User = await user.findOne({where:{id}});
-        if(!User){
-            return res.status(404).json({
-                message:"User Not Found"
-            });
-        }
-
-        if(User.role === 'provider'){
-            await service.destroy({where:{providerId:id}});
-        }
-
-        await User.destroy();
-        return res.status(200).json({
-            message:"User Deleted"
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message:error.message
-        })
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const User = await user.findOne({ where: { id } });
+    if (!User) {
+      return res.status(404).json({
+        message: "User Not Found",
+      });
     }
-}
 
+    if (User.role === "provider") {
+      await service.destroy({ where: { providerId: id } });
+    }
+
+    await User.destroy();
+    return res.status(200).json({
+      message: "User Deleted",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 //...........Delete Service .........//
-const deleteService = async(req,res)=>{
-    try {
-        const {id} = req.params
-        const Service = await service.findOne({where:{id}});
-        if(!Service){
-            return res.status(404).json({
-                message:"Service Not Found"
-            })
-        }
-
-        await Service.destroy();
-        return res.status(200).json({
-            message:"Services Deleted"
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message:error.message
-        })
+const deleteService = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const Service = await service.findOne({ where: { id } });
+    if (!Service) {
+      return res.status(404).json({
+        message: "Service Not Found",
+      });
     }
+
+    await Service.destroy();
+    return res.status(200).json({
+      message: "Services Deleted",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+
+//........................ Admin Banned or UnBanned the user ...............//
+const toggleBanUser = async(req,res)=>{
+  try {
+    const {id} = req.params
+
+    const User = await user.findOne({where:{id}});
+    if(!User){
+      return res.status(404).json({
+        message:"User Not found"
+      })
+    }
+
+    User.isBanned = !User.isBanned;
+    await User.save();
+
+    return res.status(200).json({
+      message:`User ${User.isBanned? 'Banned':'Unbanned'}`
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message:error.message
+    })
+  }
 }
-module.exports = { loginAdmin, getAllUsers, getAllProviders,getAllServices, getAllAppointment,deleteUser, deleteService };
+
+
+//..................... Get platform Stats ..............//
+const getPlatformStats = async(req,res)=>{
+  try {
+    const totalUsers = await user.count({where:{role:'user'}});
+    const totalProvider = await user.count({where:{role:'provider'}});
+    const totalAppointment = await appointment.count();
+    const totalBanned = await user.count({where:{isBanned:true}});
+    const totalApprovedAppointment = await appointment.count({where:{status:'confirmed'}});
+    const totalAppointmentComplete = await appointment.count({where:{status:'completed'}});
+    const totalAppointmentCancelled = await appointment.count({where:{status:'cancelled'}})
+
+    res.json({
+      totalUsers,
+      totalProvider,
+      totalAppointment,
+      totalBanned,
+      totalApprovedAppointment,
+      totalAppointmentComplete,
+      totalAppointmentCancelled
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message:error.message
+    })
+  }
+}
+
+module.exports = {
+  loginAdmin,
+  getAllUsers,
+  getAllProviders,
+  getAllServices,
+  getAllAppointment,
+  deleteUser,
+  deleteService,
+  toggleBanUser,
+  getPlatformStats
+};

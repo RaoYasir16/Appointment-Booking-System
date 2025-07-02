@@ -1,4 +1,4 @@
-const {user, providerProfile } = require('../models');
+const {user, providerProfile,appointment,service} = require('../models');
 
 
 //............Provider crate or Update our Profile ......//
@@ -64,11 +64,69 @@ const getProfile = async(req,res)=>{
 //............... Get Provider Appointment ............//
 const getProviderAppointments = async(req,res)=>{
     try {
-        
+        const providerId = req.user.id
+        const appointments = await appointment.findAll({
+            where:{providerId},
+            include:[
+                {
+                    model:user, as:'customer',attributes:['name','email'],
+                },
+                {
+                    model:service,as:'service',attributes:['title','price','duration']
+                }
+            ]
+        });
+
+        if(appointments.length == 0){
+            return res.status(404).json({
+                message:"Appointment Not Found"
+            })
+        }
+
+        return res.status(200).json({
+            message:'Appointments fatched Successfylly',
+            appointments
+        })
     } catch (error) {
         return res.status(500).json({
             message:error.message
         })
     }
 } 
-module.exports = {createProfile, getProfile}
+
+
+//............... chage status of Appointment ..........//
+const changeStatus = async(req,res)=>{
+    try {
+        const {status} = req.body;
+        const {id} = req.params;
+        const allowStatus =['confirmed', 'cancelled','completed'];
+        if(!allowStatus.includes(status)){
+            return res.status(400).json({
+                message:"Invalid Status Value"
+            })
+        }
+
+        const Appointment = await appointment.findOne({where:{id,providerId:req.user.id}});
+        if(!Appointment){
+            return res.status(404).json({
+                message:"Appointment not found"
+            })
+        }
+
+        Appointment.status = status;
+        Appointment.save();
+
+        return res.status(200).json({
+            message:"Status Update successfylly",
+            Appointment
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })
+    }
+}
+
+
+module.exports = {createProfile, getProfile,getProviderAppointments,changeStatus}
