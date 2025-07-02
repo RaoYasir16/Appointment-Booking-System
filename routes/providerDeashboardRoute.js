@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProfile, getProfile } = require('../controllers/providerProfileController');
+const { createProfile, getProfile } = require('../controllers/providerDeashboard');
 const router = express.Router();
 const {authanticateToken,authorizeRole} = require('../middlewares/authMiddleware')
 

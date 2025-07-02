@@ -4,7 +4,7 @@ require('dotenv').config();
 //Routes import file
 const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoute');
-const providrProfile = require("./routes/providerProfileRoute");
+const providrProfile = require("./routes/providerDeashboardRoute");
 const serviceRoute = require("./routes/serviceRoute");
 const bookingRoute = require("./routes/bookingRoute")
 

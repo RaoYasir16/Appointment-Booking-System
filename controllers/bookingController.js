@@ -20,11 +20,14 @@ const createBooking = async (req, res) => {
     const providerId = existingService.providerId;
 
     const exists = await appointment.findOne({
-      where: { providerId, appointmentDate:formatedDate, timeSlot },
+      where: { providerId, appointmentDate:formatedDate, timeSlot,status:'confirmed' },
     });
 
+      
     if (exists) {
-      return res.status(400).json({ message: "Slot already booked" });
+      return res.status(400).json({
+        message: "Slot already booked",
+      });
     }
 
     const Appointment = await appointment.create({
@@ -46,7 +49,6 @@ const createBooking = async (req, res) => {
     });
   }
 };
-
 
 //................... View Appointment ...........//
 const viewAppointments = async(req,res)=>{

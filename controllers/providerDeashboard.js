@@ -60,4 +60,15 @@ const getProfile = async(req,res)=>{
     }
 }
 
+
+//............... Get Provider Appointment ............//
+const getProviderAppointments = async(req,res)=>{
+    try {
+        
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })
+    }
+} 
 module.exports = {createProfile, getProfile}

@@ -11,7 +11,7 @@ router.post("/create-booking/:id",authanticateToken,authorizeRole('user'),create
 router.get("/view-appointments",authanticateToken,authorizeRole('user'),viewAppointments);
 
 //....................Cancelled Appointment ..........//
-router.post("/cancel-appointment",authanticateToken,authorizeRole('user'),cancelAppointment)
+router.post("/cancel-appointment/:id",authanticateToken,authorizeRole('user'),cancelAppointment)
 
 
 module.exports = router
