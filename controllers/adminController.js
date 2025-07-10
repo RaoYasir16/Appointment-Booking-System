@@ -74,7 +74,7 @@ const getAllProviders = async (req, res) => {
   try {
     const provider = await user.findAll({
       where: { role: "provider" },
-      exclude: ["password"],
+      attributes: { exclude: ["password"] },
     });
     if (provider.length === 0) {
       return res.status(404).json({
