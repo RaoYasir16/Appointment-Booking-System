@@ -139,18 +139,23 @@ const getAllAppointment = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const User = await user.findOne({ where: { id } });
-    if (!User) {
+    const userToDelete = await user.findOne({ where: { id } });
+    if (!userToDelete) {
       return res.status(404).json({
         message: "User Not Found",
       });
     }
 
-    if (User.role === "provider") {
+    if (userToDelete.role === "provider") {
       await service.destroy({ where: { providerId: id } });
+      await appointment.destroy({where:{providerId: id}});
+
+    }else if(userToDelete.role === 'user'){
+      await appointment.destroy({where:{userId:id }});
+      
     }
 
-    await User.destroy();
+    await userToDelete.destroy();
     return res.status(200).json({
       message: "User Deleted",
     });
