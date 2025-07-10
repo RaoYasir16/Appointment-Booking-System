@@ -170,14 +170,14 @@ const deleteUser = async (req, res) => {
 const deleteService = async (req, res) => {
   try {
     const { id } = req.params;
-    const Service = await service.findOne({ where: { id } });
-    if (!Service) {
+    const serviceToDelete = await service.findOne({ where: { id } });
+    if (!serviceToDelete) {
       return res.status(404).json({
         message: "Service Not Found",
       });
     }
 
-    await Service.destroy();
+    await serviceToDelete.destroy();
     return res.status(200).json({
       message: "Services Deleted",
     });
